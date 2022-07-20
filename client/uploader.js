@@ -5,7 +5,7 @@ const axios = require('axios');
 
 (async ()=>{
   
-    const storage = new Web3Storage({ token:process.env.TOKEN })
+    const storage = new Web3Storage({ token:process.env.WEB3STORAGETOKEN })
     const file = await getFilesFromPath('public');
     console.log(file);
     const files = file.map(a=>{a.name = a.name.replace('/public',''); return a;});
