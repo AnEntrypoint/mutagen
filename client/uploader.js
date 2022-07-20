@@ -3,7 +3,6 @@ const { getFilesFromPath, Web3Storage, File  } = require('web3.storage');
 const hre = require("hardhat");
 const axios = require('axios');
 
-
 (async ()=>{
   
     const storage = new Web3Storage({ token:process.env.TOKEN })
@@ -24,7 +23,7 @@ const axios = require('axios');
         )
     ])
     const Token = await hre.ethers.getContractFactory("Adaptogen")
-    const token = await Token.attach("0xF02075D38a2Fe6302E5db1B87DbFDBB4C3C65951")
+    const token = await Token.attach("0xCfeA4763583d9a39Ade0DA8Fd6d1B5282Ba67689")
     const data = await token.getData(process.env.NAME);
     if(data) console.log(await token.setAddress(process.env.NAME, 'https://'+newcid+'.ipfs.dweb.link/metadata.json'));
     else console.log(await token.mintToken(process.env.NAME, 'https://'+newcid+'.ipfs.dweb.link/metadata.json'));
