@@ -98,7 +98,6 @@ contract Mutagen is Initializable, ERC721Upgradeable, ERC721EnumerableUpgradeabl
      */
     function mintToken(string memory _name, string memory _url, string memory _collection)
         public
-        payable
         returns (uint256)
     {
         _tokenIdCounter.increment();
@@ -108,6 +107,7 @@ contract Mutagen is Initializable, ERC721Upgradeable, ERC721EnumerableUpgradeabl
         _id_to_name[newItemId] = _name;
         _uris[newItemId] = _url;
         _index_to_collection[newItemId] = _collection;
+        _addTokenToCollectionEnumeration(_collection, newItemId);
         _name_to_id[_name] = newItemId;
         //payable(owner()).transfer(10000000000000000);
         return newItemId;
@@ -191,7 +191,7 @@ contract Mutagen is Initializable, ERC721Upgradeable, ERC721EnumerableUpgradeabl
         return tokenURI(_name_to_id[_name]);
     }
 
-    function getData(string memory _collection, uint256 _index)
+    function getCollectionData(string memory _collection, uint256 _index)
         public
         view
         returns(string memory)
