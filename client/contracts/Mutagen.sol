@@ -14,9 +14,10 @@ contract Mutagen is Initializable, ERC721Upgradeable, ERC721EnumerableUpgradeabl
     using CountersUpgradeable for CountersUpgradeable.Counter;
 
     CountersUpgradeable.Counter private _tokenIdCounter;
-
-    CountersUpgradeable.Counter private _tradeCounter;
-    mapping(string => uint256) _names;
+    mapping(string => uint256) public _name_to_id;
+    mapping(string => uint256) public _collectionBalances; //collection to balance
+    mapping(string => mapping(uint256 => uint256)) public _collectionTokens; //collection to token
+    mapping(uint256 => string) public _index_to_collection;
     mapping(uint256 => string) _uris;
 
     event Payment(uint256 price, string name, uint256 item, string message);
@@ -44,7 +45,30 @@ contract Mutagen is Initializable, ERC721Upgradeable, ERC721EnumerableUpgradeabl
     }
 
     /**
-     * @dev pays a swagtag owner, emitting an event
+     * @dev Private function to add a token to this extension's ownership-tracking data structures.
+     * @param collection string representing the new collection of the given token ID
+     * @param tokenId uint256 ID of the token to be added to the tokens list of the given address
+     */
+    function _addTokenToCollectionEnumeration(string memory collection, uint256 tokenId) private {
+        _collectionBalances[collection] += 1;
+        _collectionTokens[collection][_collectionBalances[collection]] = tokenId;
+        _index_to_collection[tokenId] = collection;
+    }
+
+     /**
+     * @dev Private function to remove a token from this contracts's collection-tracking data structures.
+     * This has O(1) time complexity, but alters the order of the _ownedTokens array.
+     * @param collection string representing the collection
+     * @param tokenId uint256 ID of the token to be removed from the tokens list of the given collection
+     */
+    function _removeTokenFromCollectionEnumeration(string memory collection, uint256 tokenId) private {
+        delete _index_to_collection[tokenId];
+        delete _collectionTokens[collection][_collectionBalances[collection]];
+    }
+
+
+    /**
+     * @dev pays an owner of a token, emitting an event
      * @param _item The id of an existing item
      * @param _amount the wei amount
      */
@@ -61,7 +85,7 @@ contract Mutagen is Initializable, ERC721Upgradeable, ERC721EnumerableUpgradeabl
      * @param _amount the wei amount
      */
     function payName(string memory _name, uint256 _amount, string memory _memo) public payable virtual {
-        uint256 _item =  _names[_name];
+        uint256 _item =  _name_to_id[_name];
         uint256 fee = _amount/100;
         payable(ownerOf(_item)).transfer(_amount-fee);
         payable(owner()).transfer(fee);
@@ -72,18 +96,19 @@ contract Mutagen is Initializable, ERC721Upgradeable, ERC721EnumerableUpgradeabl
      * @dev mint a fresh swagtag
      * @param _name the swagtag name
      */
-    function mintToken(string memory _name, string memory _url)
+    function mintToken(string memory _name, string memory _url, string memory _collection)
         public
         payable
         returns (uint256)
     {
         _tokenIdCounter.increment();
-        require( !(_names[_name]>0), "Token already exists" );
+        require( !(_name_to_id[_name]>0), "Token already exists" );
         uint256 newItemId = _tokenIdCounter.current();
         _mint(msg.sender, newItemId);
         _id_to_name[newItemId] = _name;
         _uris[newItemId] = _url;
-        _names[_name] = newItemId;
+        _index_to_collection[newItemId] = _collection;
+        _name_to_id[_name] = newItemId;
         //payable(owner()).transfer(10000000000000000);
         return newItemId;
     }    
@@ -109,9 +134,9 @@ contract Mutagen is Initializable, ERC721Upgradeable, ERC721EnumerableUpgradeabl
     {
         super._burn(_tokenId);
         string memory _name = _id_to_name[_tokenId];
-        if (_names[_name] != 0) {
+        if (_name_to_id[_name] != 0) {
             delete _id_to_name[_tokenId];
-            delete _names[_name];
+            delete _name_to_id[_name];
             delete _uris[_tokenId];
         }
     }
@@ -123,6 +148,13 @@ contract Mutagen is Initializable, ERC721Upgradeable, ERC721EnumerableUpgradeabl
         returns (string memory)
     {
         return _uris[tokenId];//super.tokenURI(tokenId);
+    }
+
+    /**
+     */
+    function tokenOfCollectionByIndex(string memory collection, uint256 index) public view virtual returns (uint256) {
+        require(index < _collectionBalances[collection], "Collection: index out of bounds");
+        return _collectionTokens[collection][index];
     }
 
     function supportsInterface(bytes4 interfaceId)
@@ -138,8 +170,8 @@ contract Mutagen is Initializable, ERC721Upgradeable, ERC721EnumerableUpgradeabl
     function setAddress(string memory _name, string memory _address)
         public
     {
-        require(ownerOf(_names[_name]) == msg.sender, "Only the owner can do this");
-        _uris[_names[_name]] = _address;
+        require(ownerOf(_name_to_id[_name]) == msg.sender, "Only the owner can do this");
+        _uris[_name_to_id[_name]] = _address;
     }
 
 
@@ -148,7 +180,7 @@ contract Mutagen is Initializable, ERC721Upgradeable, ERC721EnumerableUpgradeabl
         view
         returns(uint256 id)
     {
-        return _names[_name];
+        return _name_to_id[_name];
     }
 
     function getData(string memory _name)
@@ -156,7 +188,15 @@ contract Mutagen is Initializable, ERC721Upgradeable, ERC721EnumerableUpgradeabl
         view
         returns(string memory)
     {
-        return tokenURI(_names[_name]);
+        return tokenURI(_name_to_id[_name]);
+    }
+
+    function getData(string memory _collection, uint256 _index)
+        public
+        view
+        returns(string memory)
+    {
+        return tokenURI(_collectionTokens[_collection][_index]);
     }
 
     function getName(uint256 tokenId)
@@ -167,7 +207,7 @@ contract Mutagen is Initializable, ERC721Upgradeable, ERC721EnumerableUpgradeabl
         return tokenURI(tokenId);
     }
 
-    mapping(uint256 => string) _id_to_name;
+    mapping(uint256 => string) public _id_to_name;
 
     function getNameForId(uint256 _tokenId)
         public
