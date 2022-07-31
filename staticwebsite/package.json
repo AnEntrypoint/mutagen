@@ -1,0 +1,37 @@
+{
+  "name": "hexo-site",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "build": "hexo generate",
+    "clean": "hexo clean",
+    "deploy": "hexo deploy",
+    "server": "hexo server"
+  },
+  "hexo": {
+    "version": "6.2.0"
+  },
+  "dependencies": {
+    "hexo": "^6.2.0",
+    "hexo-blogroll": "^0.0.5",
+    "hexo-generator-archive": "^1.0.0",
+    "hexo-generator-category": "^1.0.0",
+    "hexo-generator-index": "^2.0.0",
+    "hexo-generator-tag": "^1.0.0",
+    "hexo-migrator-rss": "^1.1.0",
+    "hexo-renderer-ejs": "^2.0.0",
+    "hexo-renderer-marked": "^5.0.0",
+    "hexo-renderer-stylus": "^2.1.0",
+    "hexo-rss-importer": "github:grevory/hexo-rss-importer",
+    "hexo-server": "^3.0.0",
+    "hexo-theme-landscape": "^0.0.3"
+  },
+  "devDependencies": {
+    "@nomiclabs/hardhat-ethers": "^2.1.0",
+    "@nomiclabs/hardhat-etherscan": "^3.1.0",
+    "axios": "^0.27.2",
+    "dotenv": "^16.0.1",
+    "files-from-path": "^0.2.6",
+    "nft.storage": "^6.4.1"
+  }
+}
