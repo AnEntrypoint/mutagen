@@ -6,7 +6,7 @@ const axios = require("axios");
 const path = require('path');
 (async ()=>{
   const Token = await hre.ethers.getContractFactory("Mutagen")
-  const token = await Token.attach("0x75B30629B07E2ccF275Cd1ef4Fc456C8B023f235")
+  const token = await Token.attach("0xDfC943B513bcFF2456177DA8523c84e3e52ed674")
     const storage = new NFTStorage({ token:process.env.WEB3STORAGETOKEN })
     const files = filesFromPath('public', {
       pathPrefix: path.resolve('public'),
@@ -19,15 +19,19 @@ const path = require('path');
       oldcid = (await token.getData(process.env.NAME));
       let exists;
       olddata = oldcid.replace('.ipfs.cf-ipfs.com','').replace('/metadata.json', '').replace(`https://`,'');
-      console.log({cid, olddata});
-      if(olddata) exists = await axios.get(oldcid, {headers: { Authorization: "Bearer " + process.env.WEB3STORAGETOKEN }    });
-      console.log({site:exists?.data?.site, cid:'https://'+cid+'.ipfs.cf-ipfs.com/'});
-      if(!exists.data.site) return console.log('no site');
-      if(exists.data.site === 'https://'+cid+'.ipfs.cf-ipfs.com/')  return console.log('up to date');
-      if(exists === '') return 'no exists';
+      console.log({cid, olddata, oldcid});
+      if(olddata.length) exists = await axios.get(oldcid, {headers: { Authorization: "Bearer " + process.env.WEB3STORAGETOKEN }    });
+
+      if(exists === '') throw 'no exists';
+      if(!exists?.data.link) throw 'no site';
+      if(exists.data.link === 'https://'+cid+'.ipfs.cf-ipfs.com/')  {
+        return console.log('up to date');
+      }
       if(exists.status==200) {
-        await storage.delete(exists.data.site.replace('.ipfs.cf-ipfs.com','').replace('/metadata.json', '').replace(`https://`,''));
-        await storage.delete(olddata);
+        try {
+          await storage.delete(exists.data.link.replace('.ipfs.cf-ipfs.com','').replace('/metadata.json', '').replace(`https://`,''));
+          await storage.delete(olddata);
+        }catch(e) {}
       }
       console.log({exists});
     } catch(e) {
@@ -36,9 +40,13 @@ const path = require('path');
     if(!cid) return console.log('no cid');
     const json = JSON.stringify({
       name: process.env.NAME,
-      description: process.env.DESCRIPTION, 
+      description: process.env.DESCRIPTION,
+      author: process.env.AUTHOR,
+      excerpt: process.env.EXCERPT,
+      title: process.env.TITLE,
+      project: process.env.PROJECT,
       image: process.env.IMAGE,
-      site: 'https://'+cid+'.ipfs.cf-ipfs.com/'
+      link: cid+'.ipfs.cf-ipfs.com/'
     });
     const newcid = await storage.storeDirectory([
         new File(
@@ -47,8 +55,9 @@ const path = require('path');
            { type: 'text/plain' }
         )
     ])
+    console.log({json});
     const data = await token.getData(process.env.NAME);
     if(data) console.log(await token.setAddress(process.env.NAME, 'https://'+newcid+'.ipfs.cf-ipfs.com/metadata.json'));
-    else console.log(await token.mintToken(process.env.NAME, 'https://'+newcid+'.ipfs.cf-ipfs.com/metadata.json'));
+    else console.log(await token.mintToken(process.env.NAME, 'https://'+newcid+'.ipfs.cf-ipfs.com/metadata.json', 'push.247420.xyz'));
 })();
 
