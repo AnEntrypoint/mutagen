@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Form~Display</title>
+    <meta name="description" content="" />
+    <meta name="keywords" content="" />
+    <meta name="author" content="" />
+    <script>
+      let getParam = (name) => {
+        for (let entry of new URLSearchParams(
+          window.location.search
+        ).entries()) {
+          console.log(entry);
+          if (entry[0] === "name") return entry[1];
+        }
+      };
+      window.LOADNAME = getParam("name");
+    </script>
+    <script src="schema.js"></script>
+    <script src="https://cdn.ethers.io/scripts/ethers-v3.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/ethjs-query@latest/dist/ethjs-query.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/ethjs-contract@latest/dist/ethjs-contract.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/ethereum/web3.js@latest/dist/web3.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/remarkable/1.7.1/remarkable.min.js"></script>
+    <script src="mutagen.js"></script>
+    <script src="script.js"></script>
+    <script>
+      function doinit() {
+        window.load(LOADNAME).then((a) => {
+          window.values = a;
+          for (let index in schema) {
+            const { name, type } = schema[index];
+            console.log(name);
+            if (type === "markdown") {
+              console.log(
+                "markdown found",
+                new Remarkable().render(a[name] || "")
+              );
+              document.getElementById(name).innerHTML = new Remarkable().render(
+                a[name] || ""
+              );
+            } else if (type === "file") {
+              document.getElementById(name).src = a[name] || "";
+            } else document.getElementById(name).innerHTML = a[name] || "";
+          }
+          document.getElementById("content").style.display = "block";
+          document.getElementById("loading").style.display = "none";
+        });
+      }
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+
+  </head>
+
+  <body onload="doinit();" class="bg-gray-100 transition-all">
+    <style>
+      h1 {
+        font-size: 20px;
+      }
+      h2 {
+        font-size: 18px;
+      }
+      h3 {
+        font-size: 16px;
+      }
+      h4 {
+        font-size: 14px;
+      }
+    </style>
+    <div class="h-screen bg-white " id="loading">
+<div class="flex justify-center items-center h-full">
+  <img src="https://icon-library.com/images/spinner-icon-gif/spinner-icon-gif-2.jpg" alt="">
+</div>
+</div>
+    <div id="content" class="hidden">
+      <div class=" items-center justify-center flex mt-20 mb-20">
+        <div class="w-xl bg-white rounded-3xl shadow-lg overflow-hidden">
+          <div class="w-full">
+            <div class="w-full mb-3">
+              <img id="image" class="w-full roudned-3xl" />
+            </div>
+            <span id="project" class="hidden"></span>
+            <b><h1 id="title" class="w-full text-center mb-2"></h1></b>
+            <b class="ml-5 mt-10">Public link:</b>
+            <div class="m-5 mt-2" id="link"></div>
+            <b class="ml-5 mt-10">Author:</b>
+            <div class="m-5 mt-2" id="author"></div>
+            <b class="ml-5 mt-10">Excerpt:</b>
+            <div class="m-5 mt-2" id="excerpt"></div>
+            <b class="ml-5 mt-10">Description:</b>
+            <div class="ml-5 mr-5 mb-10" id="description"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

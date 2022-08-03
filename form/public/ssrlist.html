@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  <title>Form~Display</title>
+  <meta name="description" content="Probably Entrypoint is a decentralized autonomous community" />
+  <meta name="keywords" content="entrypoint, weareone, heclgang, blockchain, crypto, projects, music" />
+  <meta property='og:title'  content='Probably Entrypoint'>
+  <meta name='twitter:title' content='Probably Entrypoint'>
+  <meta property='og:description'  content='Probably Entrypoint is a decentralized autonomous community'>
+  <meta name='twitter:description' content='Probably Entrypoint is a decentralized autonomous community'>
+  <meta property="og:image"  content="https://ipfs.io/ipfs/bafkreifs5akc6u7nr7n2m55jgucqzups2eghh7oghhvlkrogipnmtvq7li">
+  <meta name="twitter:image" content="https://ipfs.io/ipfs/bafkreifs5akc6u7nr7n2m55jgucqzups2eghh7oghhvlkrogipnmtvq7li">
+  <meta name="author" content="schwepe" />
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100 transition-all">
+  <style>
+    h1 {
+      font-size: 20px;
+    }
+
+    h2 {
+      font-size: 18px;
+    }
+
+    h3 {
+      font-size: 16px;
+    }
+
+    h4 {
+      font-size: 14px;
+    }
+  </style>
+  <!--div class="h-screen " id="loading">
+    <div class="flex justify-center items-center h-full">
+      <img src="https://icon-library.com/images/spinner-icon-gif/spinner-icon-gif-2.jpg" alt="">
+    </div>
+  </div-->
+  <div id="content">
+    <div id="list" class="w-xl  justify-center flex mt-20 mb-20">
+      ${list}
+    </div>
+  </div>
+  <script>
+    list(window.location.host, a=>document.getElementById('list').innerHTML = draw(a));
+  </script>
+</body>
+
+</html>

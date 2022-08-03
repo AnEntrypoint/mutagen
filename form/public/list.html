@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  <title>Form~Display</title>
+  <meta name="description" content="" />
+  <meta name="keywords" content="" />
+  <meta name="author" content="" />
+  <script src="schema.js"></script>
+  <script src="https://cdn.ethers.io/scripts/ethers-v3.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/ethjs-query@latest/dist/ethjs-query.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/ethjs-contract@latest/dist/ethjs-contract.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/ethereum/web3.js@latest/dist/web3.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/remarkable/1.7.1/remarkable.min.js"></script>
+  <script src="mutagen.js"></script>
+  <script src="script.js"></script>
+  <script src="viewtemplate.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100 transition-all">
+  <style>
+    h1 {
+      font-size: 20px;
+    }
+
+    h2 {
+      font-size: 18px;
+    }
+
+    h3 {
+      font-size: 16px;
+    }
+
+    h4 {
+      font-size: 14px;
+    }
+  </style>
+  <div class="h-screen " id="loading">
+    <div class="flex justify-center items-center h-full">
+      <img src="https://icon-library.com/images/spinner-icon-gif/spinner-icon-gif-2.jpg" alt="">
+    </div>
+  </div>
+  <div id="content">
+    <div id="list" class="w-xl  justify-center flex mt-20 mb-20">
+      ${list}
+    </div>
+  </div>
+  <script>
+    list(window.location.host, a=>document.getElementById('list').innerHTML = draw(a));
+  </script>
+</body>
+
+</html>
